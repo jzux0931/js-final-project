@@ -1,0 +1,87 @@
+/* Logo y carcasa exterior que enmarcan toda la interfaz de la Pokédex. */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.headerImg {
+  max-width: min(360px, 100%);
+  width: min(100%, 360px);
+  height: auto;
+  padding: 10px;
+  display: block;
+  mask:
+    linear-gradient(
+      -60deg,
+      #000 30%,
+      rgba(0, 0, 0, 0.4),
+      #000 70%
+    ) right / 350% 100%;
+  animation: infinite-shine 4.5s infinite alternate;
+}
+
+@keyframes infinite-shine {
+  100% {
+    mask-position: left;
+  }
+}
+
+main {
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: min(100%, 1040px);
+  padding: 16px;
+  background-color: #dd0b2d;
+  border: 5px solid #88061c;
+  border-radius: 10px;
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.4);
+}
+
+.pokedex-screen {
+  /* Esta pantalla recorta el menú que entra desde la izquierda y conserva el marco de la Pokédex. */
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(28rem, calc(70vh + 6rem), 44rem);
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #dd0b2d;
+}
+
+.pokedex-idle-art {
+  display: block;
+  position: absolute;
+  z-index: -1;
+  inset: 70px 10px 12px;
+  width: calc(100% - 20px);
+  height: calc(100% - 82px);
+  pointer-events: none;
+}
+
+.pokedex-idle-art__frame,
+.pokedex-idle-art__side {
+  fill: none;
+  stroke: #151515;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 5;
+  vector-effect: non-scaling-stroke;
+}
+
+.pokedex-idle-art__arrow {
+  fill: #ffdc18;
+  stroke: #151515;
+  stroke-linejoin: round;
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.pokedex-idle-art__slot {
+  fill: #b90925;
+  stroke: #151515;
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}

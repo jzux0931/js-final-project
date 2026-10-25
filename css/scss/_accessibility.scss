@@ -1,0 +1,27 @@
+@media (prefers-reduced-motion: reduce) {
+  /* Respeta la preferencia del sistema apagando animaciones y transiciones no esenciales. */
+  .search-menu-button,
+  .headerImg,
+  .project-info-button,
+  .pokemon-card__navigation-button,
+  .status-light--loading,
+  .loading-indicator__animation {
+    animation: none;
+  }
+
+  .pokedex-menu {
+    transition: none;
+  }
+
+  .pokedex-nav__dropdown {
+    animation: none;
+  }
+
+  .pokedex-nav__chevron {
+    transition: none;
+  }
+
+  .pokemon-card__navigation-button {
+    transition: none;
+  }
+}

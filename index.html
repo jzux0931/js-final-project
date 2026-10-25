@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./public/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Explora Pokémon, consulta sus datos, guarda favoritos y compara sus estadísticas." />
+    <meta name="theme-color" content="#dd0b2d" />
+    <title>Pokédex Explorer</title>
+  </head>
+
+  <body>
+    <!-- Marca exterior del dispositivo; el contenido interactivo de la Pokédex vive dentro de main. -->
+    <div class="logoContainer">
+      <img src="/src/img/image.png" alt="Logotipo de Pokédex Explorer" class="headerImg">
+    </div>
+
+    <!-- main expone estados data-* que JavaScript actualiza y CSS usa para cambiar de vista y animaciones. -->
+    <main
+      data-view="search"
+      data-menu-state="closed"
+      data-operation="idle"
+    >
+      <div class="pokedex-screen">
+      <!-- Ilustración decorativa persistente detrás del contenido de la Pokédex. -->
+      <svg
+        class="pokedex-idle-art"
+        viewBox="0 0 800 600"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          class="pokedex-idle-art__frame"
+          d="M 14 42 H 260 C 286 42 302 34 324 18 L 354 10 H 786 V 586 H 14 Z"
+        />
+        <path class="pokedex-idle-art__side" d="M 766 12 V 568 Q 766 582 750 582" />
+        <path class="pokedex-idle-art__arrow" d="M 42 274 L 88 300 L 42 326 Z" />
+        <rect class="pokedex-idle-art__slot" x="132" y="548" width="188" height="14" rx="7" />
+      </svg>
+
+      <header class="pokedex-header">
+        <div class="pokedex-topbar">
+          <div class="pokedex-topbar__controls">
+            <!-- Botón circular que abre/cierra el menú y comunica su estado accesible. -->
+            <button
+              id="searchMenuButton"
+              class="search-menu-button"
+              type="button"
+              aria-controls="searchMenu"
+              aria-expanded="false"
+              aria-label="Abrir menú de búsqueda y favoritos"
+            >
+            </button>
+
+            <!-- Indicadores visuales; aria-hidden evita anunciar luces decorativas como controles. -->
+            <div class="pokedex-status-lights" aria-hidden="true">
+              <span class="status-light status-light--error"></span>
+              <span class="status-light status-light--loading"></span>
+              <span class="status-light status-light--success"></span>
+            </div>
+          </div>
+
+          <button
+            id="projectInfoButton"
+            class="project-info-button"
+            type="button"
+            aria-label="Abrir guía de la Pokédex"
+            aria-haspopup="dialog"
+            aria-controls="projectInfoDialog"
+            aria-expanded="false"
+          >
+            i
+          </button>
+        </div>
+      </header>
+
+      <!-- Barra horizontal de navegación; sus paneles se despliegan bajo cada opción. -->
+      <nav
+        id="searchMenu"
+        class="pokedex-menu"
+        aria-label="Navegación de la Pokédex"
+        aria-hidden="true"
+        inert
+      >
+        <div class="pokedex-nav">
+          <div class="pokedex-nav__item">
+            <button
+              id="searchNavToggle"
+              class="pokedex-nav__toggle"
+              type="button"
+              data-nav-toggle
+              aria-controls="searchOptions"
+              aria-expanded="false"
+            >
+              Buscar <span class="pokedex-nav__chevron" aria-hidden="true"></span>
+            </button>
+            <div
+              id="searchOptions"
+              class="pokedex-nav__dropdown"
+              aria-hidden="true"
+              inert
+              hidden
+            >
+              <div class="menu-search-group">
+                <label for="searchInput">Pokémon por nombre, ID o tipo</label>
+                <input
+                  type="search"
+                  id="searchInput"
+                  placeholder="Ej. Pikachu, 25 o electric"
+                  aria-describedby="searchValidationFeedback"
+                >
+
+                <label for="searchType">Buscar por</label>
+                <select id="searchType" aria-describedby="searchValidationFeedback">
+                  <option value="">Selecciona uno...</option>
+                  <option value="name">Nombre</option>
+                  <option value="id">ID</option>
+                  <option value="type">Tipo</option>
+                </select>
+
+                <button id="searchButton" type="button">Buscar</button>
+                <p id="searchValidationFeedback" class="menu-validation-feedback" role="status" aria-live="polite" hidden></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pokedex-nav__item">
+            <button
+              id="favoritesNavToggle"
+              class="pokedex-nav__toggle"
+              type="button"
+              data-nav-toggle
+              aria-controls="favoritesOptions"
+              aria-expanded="false"
+            >
+              Favoritos <span class="pokedex-nav__chevron" aria-hidden="true"></span>
+            </button>
+            <div
+              id="favoritesOptions"
+              class="pokedex-nav__dropdown menu-actions"
+              role="group"
+              aria-label="Acciones de favoritos"
+              aria-hidden="true"
+              inert
+              hidden
+            >
+              <button id="favoritesButton" type="button" aria-pressed="false">
+                Mostrar favoritos
+              </button>
+            </div>
+          </div>
+
+          <button id="browseAllButton" class="pokedex-nav__action" type="button">
+            Explorar todos
+          </button>
+          <button
+            id="compareModeButton"
+            class="pokedex-nav__action"
+            type="button"
+            aria-pressed="false"
+            aria-controls="comparisonSearchPanel"
+          >
+            Comparar Pokémon
+          </button>
+          <button id="resetHomeButton" class="pokedex-nav__action" type="button">
+            Volver a portada
+          </button>
+        </div>
+      </nav>
+
+      <!-- Búsqueda propia de la sección de comparación; reutiliza los mismos criterios de la búsqueda global. -->
+      <section
+        id="comparisonSearchPanel"
+        class="comparison-search-panel"
+        aria-labelledby="comparisonSearchTitle"
+        hidden
+      >
+        <header class="comparison-search__header">
+          <h2 id="comparisonSearchTitle">Comparar Pokémon</h2>
+          <p>Busca por nombre, ID o tipo, o explora el catálogo.</p>
+        </header>
+        <div class="comparison-search__fields">
+          <label for="comparisonSearchInput">
+            Pokémon
+            <input
+              id="comparisonSearchInput"
+              type="search"
+              placeholder="Ej. Pikachu, 25 o electric"
+              aria-describedby="comparisonSearchValidationFeedback"
+            >
+          </label>
+          <label for="comparisonSearchType">
+            Buscar por
+            <select id="comparisonSearchType" aria-describedby="comparisonSearchValidationFeedback">
+              <option value="">Selecciona uno...</option>
+              <option value="name">Nombre</option>
+              <option value="id">ID</option>
+              <option value="type">Tipo</option>
+            </select>
+          </label>
+          <button id="comparisonSearchButton" type="button">Buscar Pokémon</button>
+        </div>
+        <p
+          id="comparisonSearchValidationFeedback"
+          class="menu-validation-feedback comparison-search__validation"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></p>
+      </section>
+
+      <!-- Contexto del grid: el título y la acción cambian según catálogo o favoritos. -->
+      <section id="resultsToolbar" class="results-toolbar" aria-labelledby="resultsTitle" hidden>
+        <h2 id="resultsTitle"></h2>
+        <button
+          id="clearFavoritesButton"
+          class="results-toolbar__clear-button"
+          type="button"
+          hidden
+        >
+          Vaciar favoritos
+        </button>
+      </section>
+
+      <!-- Mensajes de resultados y errores de red se mantienen separados de la validación del formulario. -->
+      <p id="searchFeedback" class="search-feedback" role="status" aria-live="polite"></p>
+      <button
+        id="initialLoadRetryButton"
+        class="load-more-button"
+        type="button"
+        aria-busy="false"
+        hidden
+      >
+        Reintentar carga inicial
+      </button>
+
+      <!-- La barra aparece al elegir Pokémon para comparar y mantiene el límite visual en dos. -->
+      <section id="comparisonToolbar" class="comparison-toolbar" aria-label="Selección para comparar" hidden>
+        <div class="comparison-toolbar__selection">
+          <p id="comparisonStatus" role="status" aria-live="polite"></p>
+          <div id="comparisonSelection" class="comparison-toolbar__names"></div>
+        </div>
+        <div class="comparison-toolbar__actions">
+          <button id="compareNowButton" type="button" disabled>Comparar (0/2)</button>
+          <button id="clearComparisonButton" type="button" hidden>Limpiar comparación</button>
+        </div>
+      </section>
+
+      <!-- Indicador común para peticiones de búsqueda; aria-live anuncia el estado sin mover el foco. -->
+      <div id="loadingIndicator" class="loading-indicator" role="status" aria-live="polite" hidden>
+        <div class="loading-indicator__animation" aria-hidden="true"></div>
+        <p>Cargando Pokémon...</p>
+      </div>
+
+      <!-- Puntos de montaje dinámicos: grid de resultados y control de carga incremental. -->
+      <section class="pokemonGrid" id="pokemonGrid" aria-label="Resultados de Pokémon" tabindex="-1"></section>
+      <button id="loadMoreButton" class="load-more-button" type="button" aria-busy="false" hidden>
+        Cargar más Pokémon
+      </button>
+
+      <!-- La comparación reemplaza temporalmente las vistas de grid y ficha. -->
+      <section id="pokemonComparison" class="pokemon-comparison" aria-label="Comparación de Pokémon" tabindex="-1" hidden></section>
+
+      <!-- dom.js monta aquí la ficha completa cuando se elige un Pokémon. -->
+      <section class="pokemonContainer" id="pokemonContainer"></section>
+      </div>
+
+      <!-- Guía introductoria en una ventana de diálogo retro, independiente de las vistas de resultados. -->
+      <dialog
+        id="projectInfoDialog"
+        class="project-info"
+        aria-labelledby="projectInfoTitle"
+        aria-describedby="projectInfoMessage"
+      >
+        <div class="project-info__frame">
+          <div class="project-info__window">
+            <header class="project-info__header">
+              <p>Guía de la Pokédex</p>
+              <span id="projectInfoProgress">1 / 6</span>
+            </header>
+            <h2 id="projectInfoTitle">Bienvenido al Pokédex Explorer</h2>
+            <p id="projectInfoMessage" aria-live="polite" aria-atomic="true">
+              Tu Pokédex interactiva para descubrir Pokémon, guardar favoritos y comparar sus estadísticas.
+            </p>
+            <div class="project-info__controls">
+              <button id="projectInfoCloseButton" class="project-info__close" type="button">Cerrar</button>
+              <button
+                id="projectInfoNextButton"
+                class="project-info__next"
+                type="button"
+                aria-label="Siguiente explicación"
+              >
+                <span aria-hidden="true">▼</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </dialog>
+    </main>
+    <!-- El entry point importa módulos y arranca la aplicación después de que el HTML existe. -->
+    <script type="module" src="/js/main.js"></script>
+  </body>
+</html>

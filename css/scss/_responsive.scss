@@ -1,0 +1,65 @@
+@media (max-width: 560px) {
+  /* Ajustes compartidos de espacio y controles para teléfonos pequeños. */
+  body {
+    padding: 1rem 0.75rem;
+  }
+
+  .pokedex-topbar {
+    min-height: 58px;
+    padding-inline: 6px;
+  }
+
+  .pokedex-topbar__controls {
+    gap: 9px;
+  }
+
+  .project-info-button {
+    width: 44px;
+  }
+
+  .pokedex-screen {
+    min-height: clamp(28rem, calc(70svh + 6rem), 44rem);
+  }
+
+  .pokedex-menu {
+    top: 60px;
+    width: calc(100% - 4px);
+    padding: 8px;
+  }
+
+  .pokedex-nav {
+    align-items: stretch;
+  }
+
+  .pokedex-nav__item {
+    flex: 1 1 130px;
+  }
+
+  .pokedex-nav__toggle,
+  .pokedex-nav__action {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .pokedex-nav__action {
+    flex: 1 1 100%;
+  }
+
+  .pokedex-nav__dropdown {
+    width: min(360px, calc(100vw - 72px));
+  }
+
+  .pokedex-nav__item:nth-child(2) .pokedex-nav__dropdown {
+    right: 0;
+    left: auto;
+  }
+
+  .search-menu-button {
+    width: 52px;
+  }
+
+  main {
+    padding: 8px;
+    border-width: 4px;
+  }
+}
